@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import axios from 'axios'
+import React, { useEffect } from 'react'
+import Card, { CardVariant } from './components/Card'
+import List from './components/List'
+import UserItem from './components/UserItem'
+import UserList from './components/UserList'
+import { IUser } from './types/types'
 
-function App() {
+const App = () => {
+  const [users, setUsers] = React.useState<IUser[]>([])
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
+  async function fetchUsers() {
+    try {
+      const response = await axios.get<IUser[]>('https://jsonplaceholder.typicode.com/users')
+      setUsers(response.data)
+    } catch (error) {
+      alert(error)
+    }
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Card onClick={(num) => console.log('click', num)} variant={CardVariant.outlined} width='200px' height='200px' >
+        <button>Кнопка</button>
+      </Card>
+      <UserList users={users} />
+      <List
+        items={users}
+        renderItem={(user: IUser) => <UserItem user={user} key={user.id} />}
+      />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
